@@ -1,9 +1,11 @@
 import * as path from "path";
 import * as fs from "fs";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { getTimeJST } from "./utils";
 
-export async function main(options: { year?: number; month?: number } = {}) {
+export async function download(
+  options: { year?: number; month?: number } = {}
+) {
   let { year, month } = options;
 
   if (!year || !month) {
@@ -23,7 +25,16 @@ export async function main(options: { year?: number; month?: number } = {}) {
     method: "get",
     url,
     responseType: "stream",
+  }).catch((e: AxiosError) => {
+    const url = e.config.url;
+    const statusCode = e.response?.status;
+    const statusText = e.response?.statusText;
+    const text = `${statusCode}: ${statusText}
+-- ${url}`;
+    console.log(text);
   });
 
-  response.data.pipe(fs.createWriteStream(filePath));
+  if (response && response.data) {
+    response.data.pipe(fs.createWriteStream(filePath));
+  }
 }
