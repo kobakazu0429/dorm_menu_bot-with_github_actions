@@ -1,13 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// require("pdfjs-dist/lib/examples/node/domstubs");
-import * as fs from "fs";
-
-import pdf_table_extractor = require("../vendor/pdf-table-extractor");
-import PDFJS = require("pdfjs-dist");
-PDFJS.workerSrc = "../vendor/pdf.worker.js";
-PDFJS.cMapUrl = "../vendor/web/cmaps";
-PDFJS.cMapPacked = true;
-PDFJS.disableFontFace = true;
+import pdf_table_extractor = require("pdf-table-extractor");
 
 enum ColumnName {
   date,
@@ -18,49 +10,47 @@ enum ColumnName {
 }
 
 type Keys = keyof typeof ColumnName;
-type IMenu = { [key in Keys]: string[] };
-
-const parsePDF2Json = async (pdfUrlOrFileName: string) => {
-  const baseOption = {
-    nativeImageDecoderSupport: "none",
-    disableNativeImageDecoder: true,
-    disableFontFace: true,
+type ArrayMenu = { [key in Keys]: string[] };
+type Menus = {
+  [key in string]: {
+    week: string;
+    morning: string;
+    lunch: string;
+    dinner: string;
   };
-
-  const option = pdfUrlOrFileName.startsWith("http")
-    ? { ...baseOption, url: pdfUrlOrFileName }
-    : {
-        ...baseOption,
-        data: new Uint8Array(fs.readFileSync(pdfUrlOrFileName)),
-      };
-
-  const pdfRead = await PDFJS.getDocument(option);
-
-  const pdfParsed = await pdf_table_extractor(pdfRead, PDFJS);
-
-  const allTables = pdfParsed.pageTables.map(
-    (page_tables: any) => page_tables.tables
-  );
-
-  const allData = {};
-
-  for (let i = 0, len = allTables.length; i < len; i++) {
-    const cleanedMenuTable = cleanData(allTables[i]);
-    const parsedMenu = parseData(cleanedMenuTable);
-    const savableDBFormat = mapping(parsedMenu);
-
-    Object.assign(allData, savableDBFormat);
-  }
-
-  return allData;
 };
 
-const cleanData = (data: any) => {
+export const parser = (filename: string, cb: (menus: Menus) => void) => {
+  pdf_table_extractor(
+    filename,
+    (parsed) => {
+      const tables = parsed.pageTables.map((page_tables) => page_tables.tables);
+      const menus = mainProcessor(tables);
+      cb(menus);
+    },
+    (e: any) => e
+  );
+};
+
+const mainProcessor = (tables: string[][]): Menus => {
+  let menus: Menus = {};
+
+  for (let i = 0, len = tables.length; i < len; i++) {
+    const filteredMenu = filterMenu(tables[i]);
+    const normalizedMenu = normalizeMenu(filteredMenu);
+    const objectedMenu = menuArrayToObject(normalizedMenu);
+
+    menus = { ...menus, ...objectedMenu };
+  }
+  return menus;
+};
+
+const filterMenu = (data: any) => {
   const pattern1 = new RegExp(/^(Ａ|Ｂ)定食\d+./, "g");
   const pattern2 = new RegExp(/栄養価エネルギー/, "g");
   const pattern3 = new RegExp(/\d{3,4}./, "g");
 
-  const cleanedData: IMenu = {
+  const filteringMenu: ArrayMenu = {
     date: [],
     week: [],
     morning: [],
@@ -69,28 +59,25 @@ const cleanData = (data: any) => {
   };
 
   for (let i = 0, j = 0, len = data.length; i < len; i++) {
-    const _index = data[i].join("");
+    const index = data[i].join("");
 
-    if (!pattern1.test(_index)) {
-      if (!pattern2.test(_index)) {
-        if (!pattern3.test(_index)) {
-          if (_index) {
-            if (j > 6) continue;
+    if (pattern1.test(index) || pattern2.test(index) || pattern3.test(index))
+      continue;
 
-            cleanedData[ColumnName[j]] = data[i];
-            j++;
-          }
-        }
-      }
+    if (index) {
+      if (j > 6) continue;
+
+      filteringMenu[ColumnName[j]] = data[i];
+      j++;
     }
   }
-  return cleanedData;
+  return filteringMenu;
 };
 
-const parseData = (data: IMenu) => {
+const normalizeMenu = (data: ArrayMenu) => {
   for (const key of Object.keys(data)) {
-    const record: IMenu[Keys] = data[key];
-    const parsed: string[] = record.map((v) => {
+    const record: ArrayMenu[Keys] = data[key];
+    const normalized = record.map((v) => {
       return (
         v
           .replace(/^日$/g, "")
@@ -132,7 +119,7 @@ const parseData = (data: IMenu) => {
     const newArray: string[] = [];
     let count = 0;
 
-    parsed.forEach((v, i, thisArray) => {
+    normalized.forEach((v, i, thisArray) => {
       if (count === 3) {
         if (thisArray[i++] === "") {
           newArray.push("無し");
@@ -156,22 +143,20 @@ const parseData = (data: IMenu) => {
   return data;
 };
 
-const mapping = (data: IMenu) => {
-  const allData: any = {};
-  for (let i = 0; i < 7; i++) {
-    if (!data.date[i] || data.date[i] === "無し") {
-      continue;
-    }
+const A_WEEK_HAS_DAYS = 7;
 
-    const dailyData: any = {};
-    dailyData.week = data.week[i];
-    dailyData.morning = data.morning[i];
-    dailyData.lunch = data.lunch[i];
-    dailyData.dinner = data.dinner[i];
+const menuArrayToObject = (data: ArrayMenu) => {
+  const remapped: any = {};
+  for (let i = 0; i < A_WEEK_HAS_DAYS; i++) {
+    const date = data.date[i];
+    if (!date || date === "無し") continue;
 
-    allData[data.date[i]] = dailyData;
+    remapped[date] = {
+      week: data.week[i],
+      morning: data.morning[i],
+      lunch: data.lunch[i],
+      dinner: data.dinner[i],
+    };
   }
-  return allData;
+  return remapped;
 };
-
-export default parsePDF2Json;

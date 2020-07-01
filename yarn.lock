@@ -714,6 +714,11 @@
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz#e486d0d97396d79beedd0a6e33f4534ff6b4973e"
   integrity sha512-f5j5b/Gf71L+dbqxIpQ4Z2WlmI/mPJ0fOkGGmFgtb6sAu97EPczzbS3/tJKxmcYDj55OX6ssqwDAWOHIYDRDGA==
 
+"@types/pdfjs-dist@^2.1.4":
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/@types/pdfjs-dist/-/pdfjs-dist-2.1.4.tgz#4ed2ad0506852d630956ff60b21096f6d7078881"
+  integrity sha512-KnEc8W2IcntVL/SKfRWy2lcJax07xEaO7ghcT0/hc2Lp5UOcmaXAi887RKOLhP8BLKsVGJ7uYH0mYo1uSvbu2A==
+
 "@types/prettier@^2.0.0":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.0.1.tgz#b6e98083f13faa1e5231bfa3bdb1b0feff536b6d"
@@ -5145,13 +5150,25 @@ pbkdf2@^3.0.3:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-pdfjs-dist@2.3.200:
-  version "2.3.200"
-  resolved "https://registry.yarnpkg.com/pdfjs-dist/-/pdfjs-dist-2.3.200.tgz#2920dc28ae7f2b8313cd6d6223c97ae85ac07eac"
-  integrity sha512-+8wBjU5h8LPZOIvR9X2uCrp/8xWQG1DRDKMLg5lzGN1qyIAZlYUxA0KQyy12Nw5jN7ozulC6v97PMaDcLgAcFg==
+pdf-table-extractor@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/pdf-table-extractor/-/pdf-table-extractor-1.0.3.tgz#e8a7056b17e621c366fd43c330ab02ec3fcf1c8e"
+  integrity sha1-6KcFaxfmIcNm/UPDMKsC7D/PHI4=
+  dependencies:
+    pdfjs-dist "^1.5.446"
+
+pdfjs-dist@^1.5.446:
+  version "1.10.100"
+  resolved "https://registry.yarnpkg.com/pdfjs-dist/-/pdfjs-dist-1.10.100.tgz#d5a250b42482ab6e41d763a795ce7cdebe6b1894"
+  integrity sha512-aCfONGqlBeazYxik3rjd7xaoCKMRYECwZSCC3EC3weqibF2V1Bp/v9WZbF7Lyy5Q6UE4NqOYu126r7U+Le4Uhg==
   dependencies:
     node-ensure "^0.0.0"
-    worker-loader "^2.0.0"
+    worker-loader "^1.0.0"
+
+pdfjs-dist@^2.4.456:
+  version "2.4.456"
+  resolved "https://registry.yarnpkg.com/pdfjs-dist/-/pdfjs-dist-2.4.456.tgz#0eaad2906cda866bbb393e79a0e5b4e68bd75520"
+  integrity sha512-yckJEHq3F48hcp6wStEpbN9McOj328Ib09UrBlGAKxvN2k+qYPN5iq6TH6jD1C0pso7zTep+g/CKsYgdrQd5QA==
 
 performance-now@^2.1.0:
   version "2.1.0"
@@ -6902,10 +6919,10 @@ worker-farm@^1.7.0:
   dependencies:
     errno "~0.1.7"
 
-worker-loader@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/worker-loader/-/worker-loader-2.0.0.tgz#45fda3ef76aca815771a89107399ee4119b430ac"
-  integrity sha512-tnvNp4K3KQOpfRnD20m8xltE3eWh89Ye+5oj7wXEEHKac1P4oZ6p9oTj8/8ExqoSBnk9nu5Pr4nKfQ1hn2APJw==
+worker-loader@^1.0.0:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/worker-loader/-/worker-loader-1.1.1.tgz#920d74ddac6816fc635392653ed8b4af1929fd92"
+  integrity sha512-qJZLVS/jMCBITDzPo/RuweYSIG8VJP5P67mP/71alGyTZRe1LYJFdwLjLalY3T5ifx0bMDRD3OB6P2p1escvlg==
   dependencies:
     loader-utils "^1.0.0"
     schema-utils "^0.4.0"
