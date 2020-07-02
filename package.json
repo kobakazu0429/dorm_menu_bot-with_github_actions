@@ -9,12 +9,14 @@
     "lint": "eslint --ext .ts,.tsx ./src --fix --ignore-pattern '**/*.d.ts'",
     "build": "yarn run lint && webpack --config ./webpack.config.js",
     "dev": "yarn build --watch",
-    "test": "jest"
+    "test": "jest",
+    "start": "ts-node src/saveMenuByJson.ts"
   },
   "dependencies": {
     "axios": "0.19.2",
     "moment-timezone": "0.5.31",
-    "pdfjs-dist": "^2.4.456"
+    "pdfjs-dist": "^2.4.456",
+    "ts-node": "^8.10.2"
   },
   "devDependencies": {
     "@kobakazu0429/eslint-config-typescript": "1.0.7",
@@ -22,15 +24,10 @@
     "@types/moment-timezone": "0.5.13",
     "@types/node": "13.11.1",
     "@types/pdfjs-dist": "^2.1.4",
-    "clean-webpack-plugin": "3.0.0",
     "eslint": "7.2.0",
     "jest": "26.1.0",
     "ts-jest": "26.1.1",
-    "ts-loader": "6.2.2",
-    "typescript": "3.9.5",
-    "webpack": "4.42.1",
-    "webpack-cli": "3.3.12",
-    "webpack-node-externals": "1.7.2"
+    "typescript": "3.9.5"
   },
   "engines": {
     "node": ">=10.9.0"
