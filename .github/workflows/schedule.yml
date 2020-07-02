@@ -1,7 +1,7 @@
 name: Scheduler
 
 on:
-  psuh
+  push
   # schedule:
   #   # 0:00 every day
   #   - cron: "0 0 * * *"
@@ -10,6 +10,8 @@ jobs:
   save:
     name: download pdf, save menu json
     runs-on: ubuntu-latest
+    env:
+      REPO: https://kobakazu0429:${{github.token}}@github.com/kobakazu0429/dorm_menu_bot-with_github_actions.git
     steps:
       - uses: actions/checkout@v2
       - name: Setup NodeJs
@@ -23,11 +25,11 @@ jobs:
         with:
           cmd: start # will run `yarn test` command
       - name: run multi command
-        with:
-          github-token: ${{github.token}}
         run: |
           git config --global user.email "someone@sample.com"
           git config --global user.name "github workflow"
+          git remote set-url origin ${REPO}
           git add .
           git commit -m 'save'
           git status
+          git push origin HEAD
