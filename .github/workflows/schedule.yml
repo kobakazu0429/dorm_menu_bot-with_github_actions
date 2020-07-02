@@ -27,11 +27,11 @@ jobs:
       - name: run multi command
         with:
           github-token: ${{github.token}}
-        run: |
-          git config --global user.email "someone@sample.com"
-          git config --global user.name "github workflow"
-          git remote set-url origin ${REPO}
-          git add .
-          git commit -m 'save'
-          git status
-          git push origin HEAD
+      run: |
+        git config --global user.email "someone@sample.com"
+        git config --global user.name "github workflow"
+        git remote set-url origin ${REPO}
+        git add .
+        git commit -m 'save'
+        git status
+        git push origin HEAD
