@@ -101,6 +101,8 @@ const normalizeMenu = (data: ArrayMenu) => {
           .replace(/(夕\n食)/g, "")
           // eslint-disable-next-line no-irregular-whitespace
           .replace(/(副　　　　菜)/g, "")
+          // eslint-disable-next-line no-irregular-whitespace
+          .replace(/　+/g, "")
           .replace(/Ａ/g, "")
           .replace(/Ｂ/g, "")
           .replace(/(\(|（)/g, "")
