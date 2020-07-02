@@ -25,8 +25,8 @@ async function searchExistFiles({
 
 async function getDownloadList() {
   const now = getTimeJST();
-  const y = now.year();
-  const m = now.month() + 1;
+  const y = now.year;
+  const m = now.month;
 
   let around: Array<{ year: number; month: number }>;
 

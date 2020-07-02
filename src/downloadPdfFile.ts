@@ -7,11 +7,11 @@ export async function download(
   options: { year?: number; month?: number } = {}
 ) {
   let { year, month } = options;
+  const now = getTimeJST();
 
   if (!year || !month) {
-    const now = getTimeJST();
-    year = now.get("year");
-    month = now.get("month") + 1;
+    year = now.year;
+    month = now.month;
   }
 
   const mm = month.toString().padStart(2, "0");
