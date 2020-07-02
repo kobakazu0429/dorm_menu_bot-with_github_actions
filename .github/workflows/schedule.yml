@@ -25,8 +25,6 @@ jobs:
         with:
           cmd: start # will run `yarn test` command
       - name: run multi command
-        with:
-          github-token: ${{github.token}}
       run: |
         git config --global user.email "someone@sample.com"
         git config --global user.name "github workflow"
