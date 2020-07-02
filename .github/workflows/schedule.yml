@@ -1,0 +1,33 @@
+name: Scheduler
+
+on:
+  psuh
+  # schedule:
+  #   # 0:00 every day
+  #   - cron: "0 0 * * *"
+
+jobs:
+  save:
+    name: download pdf, save menu json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup NodeJs
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+      - uses: borales/actions-yarn@v2.0.0
+        with:
+          cmd: install # will run `yarn install` command
+      - uses: borales/actions-yarn@v2.0.0
+        with:
+          cmd: start # will run `yarn test` command
+      - name: run multi command
+        with:
+          github-token: ${{github.token}}
+        run: |
+          git config --global user.email "someone@sample.com"
+          git config --global user.name "github workflow"
+          git add .
+          git commit -m 'save'
+          git status
