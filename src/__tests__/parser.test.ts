@@ -5,13 +5,16 @@ import { parser } from "../parser";
 describe("parser", () => {
   test("local pdf file", async (done) => {
     const expectData = await fs.readFile(
-      path.resolve("./fixtures/201909-out.json"),
+      path.resolve(__dirname, "../../fixtures/201909-out.json"),
       "utf8"
     );
+    const data = await fs.readFile(
+      path.resolve(__dirname, "../../fixtures/201909.pdf")
+    );
 
-    parser("./fixtures/201909.pdf", (result) => {
-      expect(result).toStrictEqual(JSON.parse(expectData));
-      done();
-    });
+    const result = await parser(data);
+
+    expect(result).toStrictEqual(JSON.parse(expectData));
+    done();
   });
 });

@@ -21,20 +21,22 @@ export async function download(
   const filename = `${year}${mm}`;
   const filePath = path.resolve(__dirname, `../pdf/${filename}.pdf`);
 
-  const response = await axios({
+  return await axios({
     method: "get",
     url,
     responseType: "stream",
-  }).catch((e: AxiosError) => {
-    const url = e.config.url;
-    const statusCode = e.response?.status;
-    const statusText = e.response?.statusText;
-    const text = `${statusCode}: ${statusText}
+  })
+    .then((res) => {
+      res.data.pipe(fs.createWriteStream(filePath));
+      return true;
+    })
+    .catch((e: AxiosError) => {
+      const url = e.config.url;
+      const statusCode = e.response && e.response.status;
+      const statusText = e.response && e.response.statusText;
+      const text = `${statusCode}: ${statusText}
 -- ${url}`;
-    console.log(text);
-  });
-
-  if (response && response.data) {
-    response.data.pipe(fs.createWriteStream(filePath));
-  }
+      console.log(text);
+      return false;
+    });
 }

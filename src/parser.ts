@@ -1,5 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import pdf_table_extractor = require("pdf-table-extractor");
+import * as path from "path";
+import * as PDFJS from "pdfjs-dist/es5/build/pdf.js";
+import { pdf_table_extractor } from "./pdf-table-extractor";
+
+PDFJS.GlobalWorkerOptions.workerSrc = path.resolve(
+  __dirname,
+  "../node_modules/pdfjs-dist/es5/build/pdf.worker.js"
+);
 
 enum ColumnName {
   date,
@@ -20,17 +27,25 @@ type Menus = {
   };
 };
 
-export const parser = (filename: string, cb: (menus: Menus) => void) => {
-  pdf_table_extractor(
-    filename,
-    (parsed) => {
-      const tables = parsed.pageTables.map((page_tables) => page_tables.tables);
-      const menus = mainProcessor(tables);
-      cb(menus);
-    },
-    (e: any) => e
+export async function parser(data: BufferSource) {
+  const option = {
+    data,
+    nativeImageDecoderSupport: "none",
+    disableNativeImageDecoder: true,
+    disableFontFace: true,
+  };
+
+  const pdfDoc = await PDFJS.getDocument(option).promise;
+
+  const parsedTable = await pdf_table_extractor(pdfDoc);
+
+  const tables = parsedTable.pageTables.map(
+    (page_tables) => page_tables.tables
   );
-};
+
+  const menus = mainProcessor((tables as any) as string[][]);
+  return menus;
+}
 
 const mainProcessor = (tables: string[][]): Menus => {
   let menus: Menus = {};
