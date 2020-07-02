@@ -1,7 +1,7 @@
 name: Scheduler
 
 on:
-  psuh
+  push
   # schedule:
   #   # 0:00 every day
   #   - cron: "0 0 * * *"
