@@ -15,8 +15,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: "13.14.0"
-      - name: yarn install
-        run: install
+      - run: yarn install
       - name: tweet
         uses: borales/actions-yarn@v2.0.0
         env:

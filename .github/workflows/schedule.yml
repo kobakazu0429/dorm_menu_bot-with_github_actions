@@ -17,10 +17,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: "13.14.0"
-      - name: yarn install
-        run: install
-      - name: yarn start
-        run: start
+      - run: yarn install
+      - run: yarn start
       - name: run multi command
         run: |
           git config --global user.email "someone@sample.com"
