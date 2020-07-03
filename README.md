@@ -1,28 +1,5 @@
-# dorm_menu_api
+# dorm_menu_bot-with_github_actions
 
-## Commands
+this repogitory contains a part of [dorm_menu_api](https://github.com/kobakazu0429/dorm_menu_api/) and [dorm_menu_bot](https://github.com/kobakazu0429/dorm_menu_bot/).
 
-```shell
-yarn start: start server
-yarn cli: excute some options, plz read the cli help.
-```
-
-## API v2
-
-### API Routing
-
-#### /api/v2/menus
-
-```plain
-GET: / => Get Menus.
-Params: year, month, date
-Response[JSON]: Result
-```
-
-#### /api/v2/is_saved_menu
-
-```plain
-GET: / => Get IsSavedMenu.
-Params: year, month
-Response[JSON]: Boolean(true / false)
-```
+free and serverless menu bot using Github Actions.
