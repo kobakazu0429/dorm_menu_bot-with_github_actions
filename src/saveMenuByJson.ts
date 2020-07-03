@@ -2,75 +2,27 @@ import * as path from "path";
 import { promises as fs } from "fs";
 import { generateJsonFile } from "./generateJsonFile";
 import { download } from "./downloadPdfFile";
-import { getTimeJST } from "./utils";
-
-async function searchExistFiles({
-  around,
-}: {
-  around: Array<{ year: number; month: number }>;
-}) {
-  const files = (
-    await fs.readdir(path.resolve(__dirname, "../menu-json"), {
-      withFileTypes: true,
-    })
-  ).map((v) => v.name);
-
-  const result = [...around].map(({ year, month }) => {
-    const filename = `${year}${month.toString().padStart(2, "0")}.json`;
-    return { year, month, isExist: files.includes(filename) };
-  });
-
-  return result;
-}
-
-async function getDownloadList() {
-  const now = getTimeJST();
-  const y = now.year;
-  const m = now.month;
-
-  let around: Array<{ year: number; month: number }>;
-
-  if (m === 1 /* 1 is Jan. */) {
-    around = [
-      {
-        year: y - 1,
-        month: 12,
-      },
-      {
-        year: y,
-        month: 1,
-      },
-      {
-        year: y,
-        month: 2,
-      },
-    ];
-  } else {
-    around = [
-      {
-        year: y,
-        month: m - 1,
-      },
-      {
-        year: y,
-        month: m,
-      },
-      {
-        year: y,
-        month: m + 1,
-      },
-    ];
-  }
-
-  return searchExistFiles({ around });
-}
+import { getTimeJST, aroundMonth, searchExistFiles } from "./utils";
 
 async function main() {
-  const downlaodList = (await getDownloadList()).filter((v) => !v.isExist);
-  console.log(downlaodList);
+  const { year, month } = getTimeJST();
+  const around = aroundMonth({ year, month });
+  const filenames = around.map(
+    ({ year, month }) => `${year}${month.toString().padStart(2, "0")}.json`
+  );
+  const dirpath = path.resolve(__dirname, "../menu-json");
+  const list = await searchExistFiles(dirpath, filenames);
 
-  for (let i = 0; i < downlaodList.length; i++) {
-    const { year, month } = downlaodList[i];
+  const downloadList = list
+    .map((v, i) => ({
+      isExist: v,
+      year: around[i].year,
+      month: around[i].month,
+    }))
+    .filter((v) => !v.isExist);
+
+  for (let i = 0; i < downloadList.length; i++) {
+    const { year, month } = downloadList[i];
 
     const downloaded = await download({ year, month });
 
