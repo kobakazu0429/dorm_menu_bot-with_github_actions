@@ -4,7 +4,7 @@ import * as Twitter from "twitter";
 import { getTimeJST, aroundMonth, searchExistFiles } from "./utils";
 import { Menus, Menu } from "./parser";
 
-function postTwitter(tweet: string) {
+function postTwitter(tweetBody: string) {
   const twitterOption = {
     consumer_key: process.env.CK || "",
     consumer_secret: process.env.CS || "",
@@ -13,23 +13,21 @@ function postTwitter(tweet: string) {
   };
 
   const client = new Twitter(twitterOption);
-  console.log(client);
-  console.log(tweet);
 
-  // return new Promise((resolve: (v: void) => void) => {
-  //   // client.post(
-  //   //   "statuses/update",
-  //   //   { status: tweet },
-  //   //   (error, tweet, _response) => {
-  //   //     if (error) console.log(error);
-  //   //     console.log(tweet);
-  //   //     resolve();
-  //   //   }
-  //   // );
-  // });
+  return new Promise((resolve: (v: void) => void) => {
+    client.post(
+      "statuses/update",
+      { status: tweetBody },
+      (error, tweet, _response) => {
+        if (error) console.log(error);
+        console.log(tweet);
+        resolve();
+      }
+    );
+  });
 }
 
-async function getMenu({
+export async function getMenu({
   year,
   month,
   date,
