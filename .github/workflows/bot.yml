@@ -21,14 +21,19 @@ jobs:
         with:
           cmd: install # will run `yarn install` command
       - uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: start # will run `yarn test` command
-      - name: commit
+        env:
+          CK: ${{ secrets.CK }}
+          CS: ${{ secrets.CS }}
+          AK: ${{ secrets.AK }}
+          AS: ${{ secrets.AS }}
         run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "github workflow"
-          git remote set-url origin ${REPO}
-          git add .
-          git commit -m 'save'
-          git status
-          git push origin HEAD || true # if it is not modified, does not create commit and will be failed push and action.
+          hour=$(date "+%-H")
+          if [ ${hour} -eq 7 ]; then
+            BOT_MENU_TYPE=morning yarn start
+          elif [ ${hour} -eq 11 ]; then
+            BOT_MENU_TYPE=lunch yarn start
+          elif [ ${hour} -eq 17 ]; then
+            BOT_MENU_TYPE=dinner yarn start
+          else
+            echo 'error'
+          fi
