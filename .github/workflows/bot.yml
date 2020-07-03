@@ -19,21 +19,11 @@ jobs:
         with:
           cmd: install # will run `yarn install` command
       - name: tweet
+        uses: borales/actions-yarn@v2.0.0
         env:
           CK: ${{ secrets.CK }}
           CS: ${{ secrets.CS }}
           AK: ${{ secrets.AK }}
           AS: ${{ secrets.AS }}
-        shell: bash
-        run: |
-          hour=$(date "+%-H")
-
-          if [ $hour -eq 22 ]; then
-            BOT_MENU_TYPE=morning yarn bot
-          elif [ $hour -eq 2 ]; then
-            BOT_MENU_TYPE=lunch yarn bot
-          elif [ $hour -eq 8 ]; then
-            BOT_MENU_TYPE=dinner yarn bot
-          else
-            echo 'error'
-          fi
+        with:
+          cmd: bot # will run `yarn bot` command

@@ -2,22 +2,9 @@ import * as path from "path";
 import { promises as fs } from "fs";
 import * as Twitter from "twitter";
 import { getTimeJST } from "./utils";
+import { Menus, Menu } from "./parser";
 
-interface Options {
-  menu: string;
-  typeJp: "朝" | "お昼" | "夜";
-}
-
-function postTwitter({ menu, typeJp }: Options) {
-  const { year, month, date, dayJp } = getTimeJST();
-
-  const text = [
-    `【${year}/${month}/${date}（${dayJp}）】`,
-    `今日の${typeJp}のメニューはこちらです`,
-    `- - - - - - - - - - - - - - - -`,
-    `${menu}`,
-  ].join("\n");
-
+function postTwitter(tweet: string) {
   const twitterOption = {
     consumer_key: process.env.CK || "",
     consumer_secret: process.env.CS || "",
@@ -30,7 +17,7 @@ function postTwitter({ menu, typeJp }: Options) {
   return new Promise((resolve: (v: void) => void) => {
     client.post(
       "statuses/update",
-      { status: text },
+      { status: tweet },
       (error, tweet, _response) => {
         if (error) console.log(error);
         console.log(tweet);
@@ -39,8 +26,6 @@ function postTwitter({ menu, typeJp }: Options) {
     );
   });
 }
-
-type MenuType = "morning" | "lunch" | "dinner";
 
 async function searchExistFiles({
   around,
@@ -106,20 +91,19 @@ async function getFileList({ year, month }: { year: number; month: number }) {
 
   return searchExistFiles({ around });
 }
+
 async function getMenu({
-  type,
   year,
   month,
   date,
 }: {
-  type: MenuType;
   year: number;
   month: number;
   date: number;
 }) {
   const result = await getFileList({ year, month });
 
-  const json: any[] = [];
+  const json: Menus[] = [];
 
   for (let i = 0; i < result.length; i++) {
     json.push(JSON.parse(await fs.readFile(result[i].path, "utf8")));
@@ -127,29 +111,42 @@ async function getMenu({
 
   const menu = json.flat()[0][`${month}月${date}日`];
 
-  return new Promise((resolve: (menu: string) => void) => {
-    return resolve(menu[type]);
+  return new Promise((resolve: (menu: Menu) => void) => {
+    return resolve(menu);
   });
 }
 
+interface MenuType {
+  key: "morning" | "lunch" | "dinner";
+  value: string;
+}
+
+function hourToType(hour: number): MenuType | undefined {
+  const data = {
+    7: { key: "morning", value: "朝" },
+    11: { key: "lunch", value: "お昼" },
+    17: { key: "dinner", value: "夜" },
+  };
+
+  return data[hour];
+}
+
 async function main() {
-  const menuType = process.env.BOT_MENU_TYPE as MenuType | undefined;
-  if (!menuType) return;
+  const { year, month, date, hour } = getTimeJST();
 
-  const { year, month, date } = getTimeJST();
-  const menu = await getMenu({ type: menuType, year, month, date });
+  const type = hourToType(hour);
+  if (!type) return;
 
-  switch (menuType) {
-    case "morning":
-      postTwitter({ menu, typeJp: "朝" });
-      break;
-    case "lunch":
-      postTwitter({ menu, typeJp: "お昼" });
-      break;
-    case "dinner":
-      postTwitter({ menu, typeJp: "夜" });
-      break;
-  }
+  const menu = await getMenu({ year, month, date });
+
+  const text = [
+    `【${year}/${month}/${date}（${menu["week"]}）】`,
+    `今日の${type.value}のメニューはこちらです`,
+    `- - - - - - - - - - - - - - - -`,
+    `${menu[type.key]}`,
+  ].join("\n");
+
+  await postTwitter(text);
 }
 
 main();

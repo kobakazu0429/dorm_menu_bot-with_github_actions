@@ -18,13 +18,16 @@ enum ColumnName {
 
 type Keys = keyof typeof ColumnName;
 type ArrayMenu = { [key in Keys]: string[] };
-type Menus = {
-  [key in string]: {
-    week: string;
-    morning: string;
-    lunch: string;
-    dinner: string;
-  };
+
+export interface Menu {
+  week: string;
+  morning: string;
+  lunch: string;
+  dinner: string;
+}
+
+export type Menus = {
+  [key in string]: Menu;
 };
 
 export async function parser(data: BufferSource) {
