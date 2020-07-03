@@ -10,11 +10,6 @@ jobs:
   save:
     name: bot
     runs-on: ubuntu-latest
-    env:
-      CK: ${{ secrets.CK }}
-      CS: ${{ secrets.CS }}
-      AK: ${{ secrets.AK }}
-      AS: ${{ secrets.AS }}
     steps:
       - uses: actions/checkout@v2
       - name: Setup NodeJs
@@ -25,6 +20,12 @@ jobs:
         with:
           cmd: install # will run `yarn install` command
       - name: tweet
+        env:
+          CK: ${{ secrets.CK }}
+          CS: ${{ secrets.CS }}
+          AK: ${{ secrets.AK }}
+          AS: ${{ secrets.AS }}
+        shell: bash
         run: |
           hour=$(date "+%-H")
           if [ ${hour} -eq 7 ]; then
