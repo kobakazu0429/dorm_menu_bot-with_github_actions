@@ -1,4 +1,4 @@
-name: Scheduler
+name: Bot
 
 on:
   schedule:
@@ -7,10 +7,8 @@ on:
 
 jobs:
   save:
-    name: download pdf, save menu json
+    name: bot
     runs-on: ubuntu-latest
-    env:
-      REPO: https://kobakazu0429:${{github.token}}@github.com/kobakazu0429/dorm_menu_bot-with_github_actions.git
     steps:
       - uses: actions/checkout@v2
       - name: Setup NodeJs
@@ -20,20 +18,22 @@ jobs:
       - uses: borales/actions-yarn@v2.0.0
         with:
           cmd: install # will run `yarn install` command
-      - uses: borales/actions-yarn@v2.0.0
+      - name: tweet
         env:
           CK: ${{ secrets.CK }}
           CS: ${{ secrets.CS }}
           AK: ${{ secrets.AK }}
           AS: ${{ secrets.AS }}
+        shell: bash
         run: |
           hour=$(date "+%-H")
-          if [ ${hour} -eq 7 ]; then
-            BOT_MENU_TYPE=morning yarn start
-          elif [ ${hour} -eq 11 ]; then
-            BOT_MENU_TYPE=lunch yarn start
-          elif [ ${hour} -eq 17 ]; then
-            BOT_MENU_TYPE=dinner yarn start
+
+          if [ $hour -eq 22 ]; then
+            BOT_MENU_TYPE=morning yarn bot
+          elif [ $hour -eq 2 ]; then
+            BOT_MENU_TYPE=lunch yarn bot
+          elif [ $hour -eq 8 ]; then
+            BOT_MENU_TYPE=dinner yarn bot
           else
             echo 'error'
           fi
