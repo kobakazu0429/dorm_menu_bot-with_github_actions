@@ -23,12 +23,12 @@ jobs:
       - uses: borales/actions-yarn@v2.0.0
         with:
           cmd: start # will run `yarn test` command
-      - name: run multi command
+      - name: commit
         run: |
-          git config --global user.email "someone@sample.com"
+          git config --global user.email "actions@github.com"
           git config --global user.name "github workflow"
           git remote set-url origin ${REPO}
           git add .
           git commit -m 'save'
           git status
-          git push origin HEAD
+          git push origin HEAD || true # if it is not modified, does not create commit and will be failed push and action.
