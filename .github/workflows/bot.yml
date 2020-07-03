@@ -3,7 +3,7 @@ name: Scheduler
 on:
   schedule:
     #  7, 11, 17 o'clock every day, but UTC.
-    - cron: "* 22,2,8 * * *"
+    - cron: "0 22,2,8 * * *"
 
 jobs:
   save:
