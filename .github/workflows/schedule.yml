@@ -17,12 +17,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: "13.14.0"
-      - uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: install # will run `yarn install` command
-      - uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: start # will run `yarn test` command
+      - name: yarn install
+        run: install
+      - name: yarn start
+        run: start
       - name: run multi command
         run: |
           git config --global user.email "someone@sample.com"
