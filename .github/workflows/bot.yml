@@ -1,9 +1,10 @@
 name: Bot
 
 on:
-  schedule:
-    #  7, 11, 17 o'clock every day, but UTC.
-    - cron: "0 22,2,8 * * *"
+  push
+  # schedule:
+  #   #  7, 11, 17 o'clock every day, but UTC.
+  #   - cron: "0 22,2,8 * * *"
 
 jobs:
   save:
@@ -17,11 +18,9 @@ jobs:
           node-version: "13.14.0"
       - run: yarn install
       - name: tweet
-        uses: borales/actions-yarn@v2.0.0
+        run: yarn bot
         env:
           CK: ${{ secrets.CK }}
           CS: ${{ secrets.CS }}
           AK: ${{ secrets.AK }}
           AS: ${{ secrets.AS }}
-        with:
-          cmd: bot # will run `yarn bot` command
