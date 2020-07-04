@@ -73,7 +73,7 @@ interface MenuType {
 
 function hourToType(hour: number): MenuType | undefined {
   const data = {
-    7: { key: "morning", value: "朝" },
+    9: { key: "morning", value: "朝" },
     14: { key: "lunch", value: "お昼" },
     17: { key: "dinner", value: "夜" },
   };
