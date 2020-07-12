@@ -18,3 +18,10 @@ jobs:
           node-version: "13.14.0"
       - run: yarn install
       - run: yarn cli ${{ github.event.inputs.yyyymm }}
+      - name: run multi command
+        run: |
+          git config --global user.email "someone@sample.com"
+          git config --global user.name "github workflow"
+          git remote set-url origin ${REPO}
+          git add .
+          git diff --cached --quiet HEAD || git commit -m "save" && git status && git push origin HEAD
