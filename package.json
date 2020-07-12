@@ -9,7 +9,8 @@
     "lint": "eslint --ext .ts,.tsx ./src --fix --ignore-pattern '**/*.d.ts'",
     "test": "jest",
     "start": "ts-node src/saveMenuByJson.ts",
-    "bot": "ts-node src/bot.ts"
+    "bot": "ts-node src/bot.ts",
+    "cli": "ts-node src/cli.ts"
   },
   "dependencies": {
     "axios": "0.19.2",
