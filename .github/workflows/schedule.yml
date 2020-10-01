@@ -1,6 +1,7 @@
 name: Scheduler
 
 on:
+  push:
   schedule:
     # 0:00 every day
     - cron: "0 15 * * *"
