@@ -16,7 +16,7 @@ export async function download(
 
   const mm = month.toString().padStart(2, "0");
 
-  const url = `https://www.kure-nct.ac.jp/life/dorm/pdf/${mm}_menu.pdf`;
+  const url = `https://www.kure-nct.ac.jp/life/dorm/pdf/menu.pdf`;
 
   const filename = `${year}${mm}`;
   const filePath = path.resolve(__dirname, `../pdf/${filename}.pdf`);
