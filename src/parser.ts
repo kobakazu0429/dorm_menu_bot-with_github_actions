@@ -1,12 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import * as path from "path";
-import * as PDFJS from "pdfjs-dist/es5/build/pdf.js";
-import { pdf_table_extractor } from "./pdf-table-extractor";
-
-PDFJS.GlobalWorkerOptions.workerSrc = path.resolve(
-  __dirname,
-  "../node_modules/pdfjs-dist/es5/build/pdf.worker.js"
-);
+import * as PDFJS from "pdfjs-dist/es5/build/pdf";
+import pdf_table_extractor from "./pdf-table-extractor";
+import type { PageTables } from "./pdf-table-extractor";
 
 enum ColumnName {
   date,
@@ -30,34 +24,31 @@ export type Menus = {
   [key in string]: Menu;
 };
 
-export async function parser(data: BufferSource) {
-  const option = {
-    data,
-    nativeImageDecoderSupport: "none",
-    disableNativeImageDecoder: true,
-    disableFontFace: true,
-  };
+export async function parser(data: Buffer) {
+  try {
+    const pdfRead = await PDFJS.getDocument({
+      data,
+      disableFontFace: true,
+      cMapPacked: true,
+    }).promise;
 
-  const pdfDoc = await PDFJS.getDocument(option).promise;
-
-  const parsedTable = await pdf_table_extractor(pdfDoc);
-
-  const tables = parsedTable.pageTables.map(
-    (page_tables) => page_tables.tables
-  );
-
-  const menus = mainProcessor((tables as any) as string[][]);
-  return menus;
+    const pdfParsed = await pdf_table_extractor(pdfRead, PDFJS.OPS);
+    const tables = pdfParsed.pageTables.map((pageTable) => pageTable.tables);
+    const menus = mainProcessor(tables);
+    return menus;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
 }
 
-const mainProcessor = (tables: string[][]): Menus => {
+const mainProcessor = (tables: PageTables["tables"][]): Menus => {
   let menus: Menus = {};
 
   for (let i = 0, len = tables.length; i < len; i++) {
     const filteredMenu = filterMenu(tables[i]);
     const normalizedMenu = normalizeMenu(filteredMenu);
     const objectedMenu = menuArrayToObject(normalizedMenu);
-
     menus = { ...menus, ...objectedMenu };
   }
   return menus;
