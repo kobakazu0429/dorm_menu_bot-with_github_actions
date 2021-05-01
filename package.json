@@ -1,6 +1,6 @@
 {
-  "name": "dorm_menu_api",
-  "version": "3.0.0",
+  "name": "dorm_menu_bot-with_github_actions",
+  "version": "1.0.0",
   "repository": "git@github.com:kobakazu0429/dorm_menu_bot-with_github_actions.git",
   "author": "kobakakzu0429 <kobakazu10@gmail.com>",
   "license": "MIT",
