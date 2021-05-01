@@ -1,15 +1,35 @@
+// @ts-nocheck
 /* eslint-disable */
 // modify from https://github.com/mozilla/pdf.js/blob/master/examples/node/pdf2svg.js
-function pdf_table_extractor_progress(_result) {
-  // console.log(_result);
+
+import type { PDFDocumentProxy } from "pdfjs-dist/types/display/api";
+import { OPS } from "pdfjs-dist";
+
+export interface PageTables {
+  page: number;
+  tables: string[][];
+  merges: any;
+  merge_alias: any;
+  width: number;
+  height: number;
 }
 
-module.exports = function (doc, PDFJSOPS) {
+export interface Result {
+  pageTables: PageTables[];
+  numPages: number;
+  currentPages: number;
+}
+
+export default async function (
+  doc: PDFDocumentProxy,
+  PDFJSOPS: typeof OPS
+): Promise<Result> {
   var numPages = doc.numPages;
-  var result = {};
-  result.pageTables = [];
-  result.numPages = numPages;
-  result.currentPages = 0;
+  var result: Result = {
+    pageTables: [],
+    numPages: numPages,
+    currentPages: 0,
+  };
 
   var transform_fn = function (m1, m2) {
     return [
@@ -43,11 +63,12 @@ module.exports = function (doc, PDFJSOPS) {
         .then(function (opList) {
           // Get rectangle first
           var showed = {};
-          var REVOPS = [];
+          var REVOPS: any[] = [];
           for (var op in PDFJSOPS) {
             REVOPS[PDFJSOPS[op]] = op;
           }
 
+          var lineWidth;
           var strokeRGBColor = null;
           var fillRGBColor = null;
           var current_x, current_y;
@@ -136,11 +157,11 @@ module.exports = function (doc, PDFJSOPS) {
             };
           });
           // merge rectangle to verticle lines and horizon lines
-          edges1 = JSON.parse(JSON.stringify(edges));
+          var edges1 = JSON.parse(JSON.stringify(edges));
           edges1.sort(function (a, b) {
             return a.x - b.x || a.y - b.y;
           });
-          edges2 = JSON.parse(JSON.stringify(edges));
+          var edges2 = JSON.parse(JSON.stringify(edges));
           edges2.sort(function (a, b) {
             return a.y - b.y || a.x - b.x;
           });
@@ -174,6 +195,7 @@ module.exports = function (doc, PDFJSOPS) {
             return lines;
           };
 
+          var edge;
           while ((edge = edges1.shift())) {
             // skip horizon lines
             if (edge.width > line_max_width) {
@@ -312,7 +334,7 @@ module.exports = function (doc, PDFJSOPS) {
           };
 
           // handle merge cells
-          x_list = verticles.map(function (a) {
+          var x_list = verticles.map(function (a) {
             return a.x;
           });
 
@@ -341,9 +363,9 @@ module.exports = function (doc, PDFJSOPS) {
           var verticle_merges = {};
           // skip the 1st lines and final lines
           for (var r = 0; r < horizons.length - 2 + top_out + bottom_out; r++) {
-            hor = horizons[bottom_out + horizons.length - r - 2];
+            var hor = horizons[bottom_out + horizons.length - r - 2];
             lines = hor.lines.slice(0);
-            col = search_index(lines[0].left, x_list);
+            var col = search_index(lines[0].left, x_list);
             if (col != 0) {
               for (var c = 0; c < col; c++) {
                 verticle_merges[[r, c].join("-")] = {
@@ -354,9 +376,10 @@ module.exports = function (doc, PDFJSOPS) {
                 };
               }
             }
+            var line;
             while ((line = lines.shift())) {
-              left_col = search_index(line.left, x_list);
-              right_col = search_index(line.right, x_list);
+              var left_col = search_index(line.left, x_list);
+              var right_col = search_index(line.right, x_list);
               if (left_col != col) {
                 for (var c = col; c < left_col; c++) {
                   verticle_merges[[r, c].join("-")] = {
@@ -404,9 +427,9 @@ module.exports = function (doc, PDFJSOPS) {
           var horizon_merges = {};
 
           for (var c = 0; c < verticles.length - 2; c++) {
-            ver = verticles[c + 1];
+            var ver = verticles[c + 1];
             lines = ver.lines.slice(0);
-            row = search_index(lines[0].bottom, y_list) + bottom_out;
+            var row = search_index(lines[0].bottom, y_list) + bottom_out;
             if (row != 0) {
               for (var r = 0; r < row; r++) {
                 horizon_merges[[r, c].join("-")] = {
@@ -418,13 +441,13 @@ module.exports = function (doc, PDFJSOPS) {
               }
             }
             while ((line = lines.shift())) {
-              top_row = search_index(line.top, y_list);
+              var top_row = search_index(line.top, y_list);
               if (top_row == -1) {
                 top_row = y_list.length + bottom_out;
               } else {
                 top_row += bottom_out;
               }
-              bottom_row = search_index(line.bottom, y_list) + bottom_out;
+              var bottom_row = search_index(line.bottom, y_list) + bottom_out;
               if (bottom_row != row) {
                 for (var r = bottom_row; r < row; r++) {
                   horizon_merges[[r, c].join("-")] = {
@@ -514,8 +537,8 @@ module.exports = function (doc, PDFJSOPS) {
         })
         .then(function () {
           return page.getTextContent().then(function (content) {
-            tables = [];
-            table_pos = [];
+            var tables = [];
+            var table_pos = [];
             for (var i = 0; i < horizons.length - 1; i++) {
               tables[i] = [];
               table_pos[i] = [];
@@ -524,9 +547,10 @@ module.exports = function (doc, PDFJSOPS) {
                 table_pos[i][j] = null;
               }
             }
+            var item;
             while ((item = content.items.shift())) {
-              x = item.transform[4];
-              y = item.transform[5];
+              var x = item.transform[4];
+              var y = item.transform[5];
 
               var col = -1;
               for (var i = 0; i < verticles.length - 1; i++) {
@@ -550,7 +574,7 @@ module.exports = function (doc, PDFJSOPS) {
               }
 
               if ("undefined" !== typeof merge_alias[row + "-" + col]) {
-                id = merge_alias[row + "-" + col];
+                var id = merge_alias[row + "-" + col];
                 row = id.split("-")[0];
                 col = id.split("-")[1];
               }
@@ -574,9 +598,6 @@ module.exports = function (doc, PDFJSOPS) {
               });
             }
             result.currentPages++;
-            if ("function" === typeof pdf_table_extractor_progress) {
-              // pdf_table_extractor_progress(result);
-            }
           });
         });
     });
@@ -585,7 +606,6 @@ module.exports = function (doc, PDFJSOPS) {
   for (var i = 1; i <= numPages; i++) {
     lastPromise = lastPromise.then(loadPage.bind(null, i));
   }
-  return lastPromise.then(function () {
-    return result;
-  });
-};
+  await lastPromise;
+  return result;
+}
