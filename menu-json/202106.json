@@ -1,0 +1,4 @@
+{
+  "message": "The PDF file is empty, i.e. its size is zero bytes.",
+  "name": "InvalidPDFException"
+}
