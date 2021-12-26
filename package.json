@@ -15,7 +15,7 @@
     "lint:prettier": "prettier \"./{src,test}/**/*.ts\" --write"
   },
   "dependencies": {
-    "axios": "0.21.1",
+    "axios": "0.21.2",
     "moment-timezone": "0.5.33",
     "pdfjs-dist": "2.7.570",
     "ts-node": "9.1.1",
