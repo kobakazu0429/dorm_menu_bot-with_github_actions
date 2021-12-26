@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@kobakazu0429/eslint-config-typescript": "2.1.0",
-    "@types/jest": "26.0.23",
+    "@types/jest": "26.0.24",
     "@types/moment-timezone": "0.5.30",
     "@types/node": "15.0.1",
     "@types/twitter": "1.7.0",
