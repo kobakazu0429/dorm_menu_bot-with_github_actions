@@ -17,7 +17,7 @@
   "dependencies": {
     "axios": "0.21.1",
     "moment-timezone": "0.5.33",
-    "pdfjs-dist": "2.7.570",
+    "pdfjs-dist": "2.12.313",
     "ts-node": "9.1.1",
     "twitter": "1.7.1"
   },
